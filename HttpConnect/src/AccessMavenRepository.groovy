@@ -20,23 +20,13 @@ class MyConnect {
 		return XmlUtil.serialize(xml)
 	}
 	
-	private getUrl(String val) {
-		return val.replaceAll(~/\./, "/")
-	}
-	
-	private String getMavenFilename(artefactId, version,type) {
+	public String getMavenFilename(artefactId, version, type) {
 		return "${artefactId}-${version}.${type}"
 	}
 
-	private String getUrl(groupId, artefactId, version, filename) {
-		return "${repository}/${getUrl(groupId)}/${artefactId}/${version}/${filename}"
-	}
-
-	public void downloadMavenartefact(groupId, artefactId, version, type, outputFolder) {
+	public void downloadMavenartefact(groupId, artefactId, version, outputFolder, filename) {
 		//TODO use a classifier
-		def filename = getMavenFilename(artefactId, version,type)
-		//nekohtml-1.9.22.jar
-		def url = getUrl(groupId, artefactId, version,filename)
+		def url = getUrl(groupId, artefactId, version, filename)
 		download(url,outputFolder)
 	}
 	
@@ -46,6 +36,15 @@ class MyConnect {
 			out << new URL(address).openStream()
 		}
 	}
+
+	private getUrl(String val) {
+		return val.replaceAll(~/\./, "/")
+	}
+	
+	private String getUrl(groupId, artefactId, version, filename) {
+		return "${repository}/${getUrl(groupId)}/${artefactId}/${version}/${filename}"
+	}
+
 }
 
 def myConnect = new MyConnect("https://dl.bintray.com/kdabir/glide");
@@ -67,6 +66,7 @@ artefactId="nekohtml"
 version="1.9.22"
 type="jar"
 downloadFolder="./download"
+filename=myConnect.getMavenFilename(artefactId, version, type)
 println "Download a Maven artefact : ${groupId}:${artefactId}:${version} to :${downloadFolder}"
-myConnect.downloadMavenartefact(groupId, artefactId, version, type, downloadFolder)
-println "Downloaded"
+myConnect.downloadMavenartefact(groupId, artefactId, version, downloadFolder, filename)
+println "Downloaded ${filename}"
